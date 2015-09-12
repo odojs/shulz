@@ -1,0 +1,28 @@
+{
+  "name": "shulz",
+  "version": "0.1.1",
+  "description": "Resilient, persistent in process hashmaps for Node.js",
+  "main": "index.js",
+  "bin": {
+    "shulz": "bin/shulz"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/odojs/shulz.git"
+  },
+  "keywords": [
+    "queue"
+  ],
+  "author": "Thomas Coats <thomas.coats@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/odojs/shulz/issues"
+  },
+  "homepage": "https://github.com/odojs/shulz#readme",
+  "dependencies": {
+    "graceful-fs": "4.1.2"
+  }
+}
