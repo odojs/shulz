@@ -21,6 +21,7 @@ module.exports = (path) ->
       value = buffer.toString 'utf8', offset, offset + valuelength
       offset += valuelength
       offset = roundbyte offset
+      value = JSON.parse value
       console.log "set #{key} #{value}"
     else if marker is markers.clear
       keylength = buffer.readUInt32BE offset

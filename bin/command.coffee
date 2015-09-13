@@ -41,7 +41,7 @@ commands =
   cat: (path) ->
     object = shulz.read path
     for key, value of object
-      console.log "#{key} => #{value}"
+      console.log "#{key} => #{JSON.stringify value}"
 
   purge: (path) ->
     map = shulz.create path
@@ -53,21 +53,19 @@ commands =
     map.close()
 
   get: (key, path) ->
-    # messages = shulz.read path
-    # index = Math.max index, 1
-    # index = Math.min index, messages.length + 1
-    # messages.splice index - 1, 0, message
-    # map = shulz.create path
-    # for message in messages
-    #   map.enmap message
-    # map.close()
-    # console.log "#{index}) #{message}"
+    map = shulz.open path
+    console.log JSON.stringify map.get key
+    map.close()
 
   set: (key, value, path) ->
-    
+    map = shulz.open path
+    console.log map.set key, JSON.parse value
+    map.close()
 
   clear: (key, path) ->
-    
+    map = shulz.open path
+    map.clear key
+    map.close()
 
 cmds =
   cat: ->
@@ -75,12 +73,16 @@ cmds =
     usage_error 'shulz cat requires one argument - the map path'
 
   get: ->
-    return commands.cat args[0], args[1] if args.length is 2
+    return commands.get args[0], args[1] if args.length is 2
     usage_error 'shulz get requires two arguments - the key to retrieve and the map path'
 
   set: ->
-    return commands.cat args[0], args[1], args[2] if args.length is 3
+    return commands.set args[0], args[1], args[2] if args.length is 3
     usage_error 'shulz set requires three arguments - the key to set, the value to set it to and the map path'
+
+  clear: ->
+    return commands.clear args[0], args[1] if args.length is 2
+    usage_error 'shulz clear requires two arguments - the key to clear and the map path'
 
   purge: ->
     return commands.purge args[0] if args.length is 1

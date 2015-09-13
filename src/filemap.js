@@ -37,6 +37,7 @@ shulz = {
     fsmap = {
       set: function(key, value) {
         var allocatesize, buffer, keylength, size, valuelength;
+        value = JSON.stringify(value);
         keylength = Buffer.byteLength(key);
         valuelength = Buffer.byteLength(value);
         size = 8 + (roundbyte(keylength)) + 4 + (roundbyte(valuelength));

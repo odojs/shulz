@@ -36,7 +36,7 @@ commands = {
     results = [];
     for (key in object) {
       value = object[key];
-      results.push(console.log(key + " => " + value));
+      results.push(console.log(key + " => " + (JSON.stringify(value))));
     }
     return results;
   },
@@ -51,9 +51,24 @@ commands = {
     map.compact();
     return map.close();
   },
-  get: function(key, path) {},
-  set: function(key, value, path) {},
-  clear: function(key, path) {}
+  get: function(key, path) {
+    var map;
+    map = shulz.open(path);
+    console.log(JSON.stringify(map.get(key)));
+    return map.close();
+  },
+  set: function(key, value, path) {
+    var map;
+    map = shulz.open(path);
+    console.log(map.set(key, JSON.parse(value)));
+    return map.close();
+  },
+  clear: function(key, path) {
+    var map;
+    map = shulz.open(path);
+    map.clear(key);
+    return map.close();
+  }
 };
 
 cmds = {
@@ -65,15 +80,21 @@ cmds = {
   },
   get: function() {
     if (args.length === 2) {
-      return commands.cat(args[0], args[1]);
+      return commands.get(args[0], args[1]);
     }
     return usage_error('shulz get requires two arguments - the key to retrieve and the map path');
   },
   set: function() {
     if (args.length === 3) {
-      return commands.cat(args[0], args[1], args[2]);
+      return commands.set(args[0], args[1], args[2]);
     }
     return usage_error('shulz set requires three arguments - the key to set, the value to set it to and the map path');
+  },
+  clear: function() {
+    if (args.length === 2) {
+      return commands.clear(args[0], args[1]);
+    }
+    return usage_error('shulz clear requires two arguments - the key to clear and the map path');
   },
   purge: function() {
     if (args.length === 1) {
