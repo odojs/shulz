@@ -3,6 +3,7 @@ Usage: shulz command [key] [value] file
 
 View:
   cat                     Print entire map contents
+  print                   Print full operations
   get key                 Print the value for key
 
 Manipulate:
@@ -43,6 +44,9 @@ commands =
     for key, value of object
       console.log "#{key} => #{JSON.stringify value}"
 
+  print: (path) ->
+    shulz.print path
+
   purge: (path) ->
     map = shulz.create path
     map.close()
@@ -71,6 +75,10 @@ cmds =
   cat: ->
     return commands.cat args[0] if args.length is 1
     usage_error 'shulz cat requires one argument - the map path'
+
+  print: ->
+    return commands.print args[0] if args.length is 1
+    usage_error 'shulz print requires one argument - the map path'
 
   get: ->
     return commands.get args[0], args[1] if args.length is 2

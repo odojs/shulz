@@ -12,6 +12,9 @@ On disk persistence
 In memory hashmap
 - String keys only
 
+
+# Usage
+
 ```js
 var shulz = require('shulz');
 

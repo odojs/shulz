@@ -22,7 +22,7 @@ module.exports = (path) ->
       offset += valuelength
       offset = roundbyte offset
       value = JSON.parse value
-      console.log "set #{key} #{value}"
+      console.log "set #{key} #{JSON.stringify value}"
     else if marker is markers.clear
       keylength = buffer.readUInt32BE offset
       offset += 4
