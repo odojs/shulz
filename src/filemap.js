@@ -20,7 +20,8 @@ shulz = {
     }
   },
   create: function(path, buffersize) {
-    var allocated, fd, fsmap, memmap, noopbuffer, offset;
+    var _isclosed, allocated, fd, fsmap, memmap, noopbuffer, offset;
+    _isclosed = false;
     shulz.assert(path);
     fs.writeFileSync(path + ".lock", '');
     if (buffersize == null) {
@@ -126,6 +127,10 @@ shulz = {
         return fsmap.rename(newpath);
       },
       close: function() {
+        if (_isclosed) {
+          return;
+        }
+        _isclosed = true;
         return fsmap.close();
       }
     };

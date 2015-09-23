@@ -15,6 +15,7 @@ shulz =
     if fs.existsSync "#{path}.lock"
       throw new ShulzMapBusy()
   create: (path, buffersize) ->
+    _isclosed = no
     shulz.assert path
     fs.writeFileSync "#{path}.lock", ''
     # default buffer size
@@ -95,6 +96,8 @@ shulz =
     rename: (newpath) ->
       fsmap.rename newpath
     close: ->
+      return if _isclosed
+      _isclosed = yes
       fsmap.close()
 
   open: (path) ->
