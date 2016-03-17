@@ -24,9 +24,7 @@ shulz = {
     _isclosed = false;
     shulz.assert(path);
     fs.writeFileSync(path + ".lock", '');
-    if (buffersize == null) {
-      buffersize = DEFAULT_BUFFER_SIZE;
-    }
+    buffersize = buffersize != null ? buffersize : DEFAULT_BUFFER_SIZE;
     noopbuffer = new Buffer(buffersize);
     noopbuffer.fill(markers.noop);
     fd = fs.openSync(path, 'w');
@@ -135,11 +133,12 @@ shulz = {
       }
     };
   },
-  open: function(path) {
+  open: function(path, buffersize) {
     var key, map, object, value;
+    buffersize = buffersize != null ? buffersize : DEFAULT_BUFFER_SIZE;
     shulz.assert(path);
     fs.writeFileSync(path + ".lock", '');
-    map = shulz.create(path + ".new");
+    map = shulz.create(path + ".new", buffersize);
     if (fs.existsSync(path)) {
       object = shulz.read(path);
       for (key in object) {

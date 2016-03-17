@@ -19,7 +19,7 @@ shulz =
     shulz.assert path
     fs.writeFileSync "#{path}.lock", ''
     # default buffer size
-    buffersize = DEFAULT_BUFFER_SIZE if !buffersize?
+    buffersize = buffersize ? DEFAULT_BUFFER_SIZE
     noopbuffer = new Buffer buffersize
     noopbuffer.fill markers.noop
     fd = fs.openSync path, 'w'
@@ -100,10 +100,11 @@ shulz =
       _isclosed = yes
       fsmap.close()
 
-  open: (path) ->
+  open: (path, buffersize) ->
+    buffersize = buffersize ? DEFAULT_BUFFER_SIZE
     shulz.assert path
     fs.writeFileSync "#{path}.lock", ''
-    map = shulz.create "#{path}.new"
+    map = shulz.create "#{path}.new", buffersize
     if fs.existsSync path
       object = shulz.read path
       for key, value of object
