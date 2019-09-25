@@ -35,7 +35,7 @@ const shulz = {
         const keylength = Buffer.byteLength(key)
         const valuelength = Buffer.byteLength(value)
         const size = 8 + (roundbyte(keylength)) + 4 + (roundbyte(valuelength))
-        const allocatesize = size
+        let allocatesize = size
         if (offset + size > allocated) {
           allocated = Math.ceil((offset + size) / buffersize) * buffersize
           allocatesize = allocated - offset
@@ -46,9 +46,8 @@ const shulz = {
         buffer.write(key, 8, keylength)
         buffer.writeUInt32BE(valuelength, 8 + (roundbyte(keylength)))
         buffer.write(value, 12 + (roundbyte(keylength)), valuelength)
-        if (12 + (roundbyte(keylength)) + valuelength < allocatesize) {
+        if (12 + (roundbyte(keylength)) + valuelength < allocatesize)
           buffer.fill(markers.noop, 12 + (roundbyte(keylength)) + valuelength)
-        }
         fs.writeSync(fd, buffer, 0, allocatesize, offset)
         fs.fsyncSync(fd)
         offset += size
@@ -56,7 +55,7 @@ const shulz = {
       clear: (key) => {
         const length = Buffer.byteLength(key)
         const size = roundbyte(length + 8)
-        const allocatesize = size
+        let allocatesize = size
         if (offset + size > allocated) {
           allocated = Math.ceil((offset + size) / buffersize) * buffersize
           allocatesize = allocated - offset
@@ -65,9 +64,8 @@ const shulz = {
         buffer.writeUInt32BE(markers.clear, 0)
         buffer.writeUInt32BE(length, 4)
         buffer.write(key, 8, length)
-        if (length + 8 < allocatesize) {
+        if (length + 8 < allocatesize)
           buffer.fill(markers.noop, length + 8)
-        }
         fs.writeSync(fd, buffer, 0, allocatesize, offset)
         fs.fsyncSync(fd)
         offset += size
