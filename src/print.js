@@ -1,10 +1,9 @@
-const fs = require('graceful-fs')
-const markers = require('./markers')
-const roundbyte = require('./roundbyte')
+import fs from 'graceful-fs'
+import markers from './markers.js'
+import roundbyte from './roundbyte.js'
+import { ShulzMapCorrupt } from './errors.js'
 
-const {ShulzMapCorrupt} = require('./errors')
-
-module.exports = (path) => {
+const fn = path => {
   const buffer = fs.readFileSync(path)
   let offset = 0
   while (offset < buffer.length) {
@@ -24,15 +23,16 @@ module.exports = (path) => {
       offset = roundbyte(offset)
       value = JSON.parse(value)
       console.log(`set ${key} ${JSON.stringify(value)}`)
-    } else if (marker === markers.clear) {
+    } else if (marker === markers.delete) {
       const keylength = buffer.readUInt32BE(offset)
       offset += 4
       const key = buffer.toString('utf8', offset, offset + keylength)
       offset += keylength
       offset = roundbyte(offset)
-      console.log(`clear ${key}`)
+      console.log(`delete ${key}`)
     } else
       throw new ShulzMapCorrupt()
   }
   console.log('noop')
 }
+export default fn

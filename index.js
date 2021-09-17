@@ -1,1 +1,1 @@
-module.exports = require('./src/filemap')
+export { default } from './src/filemap.js'

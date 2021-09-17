@@ -1,12 +1,12 @@
 // A file backed queue.
 
 // Incremental backoff on EMFILE
-const fs = require('graceful-fs')
-const Memmap = require('./memorymap')
-const markers = require('./markers')
-const roundbyte = require('./roundbyte')
-
-const {ShulzMapBusy} = require('./errors')
+import fs from 'graceful-fs'
+import markers from './markers.js'
+import roundbyte from './roundbyte.js'
+import { ShulzMapBusy } from './errors.js'
+import print from './print.js'
+import read from './read.js'
 
 // default buffer size 128k
 const DEFAULT_BUFFER_SIZE = 1024 * 128
@@ -28,7 +28,7 @@ const shulz = {
     fs.fsyncSync(fd)
     let offset = 0
     let allocated = buffersize
-    const memmap = Memmap()
+    const memmap = new Map()
     const fsmap = {
       set: (key, value) => {
         value = JSON.stringify(value)
@@ -52,7 +52,7 @@ const shulz = {
         fs.fsyncSync(fd)
         offset += size
       },
-      clear: (key) => {
+      delete: key => {
         const length = Buffer.byteLength(key)
         const size = roundbyte(length + 8)
         let allocatesize = size
@@ -61,7 +61,7 @@ const shulz = {
           allocatesize = allocated - offset
         }
         const buffer = Buffer.allocUnsafe(allocatesize)
-        buffer.writeUInt32BE(markers.clear, 0)
+        buffer.writeUInt32BE(markers.delete, 0)
         buffer.writeUInt32BE(length, 4)
         buffer.write(key, 8, length)
         if (length + 8 < allocatesize)
@@ -77,31 +77,30 @@ const shulz = {
         fs.fsyncSync(fd)
         offset = 0
         allocated = buffersize
-        const all = memmap.all()
-        for (let key in all)
-          fsmap.set(key, all[key])
+        for (const [key, value] of memmap.entries())
+          fsmap.set(key, value)
         fs.renameSync(`${path}.new`, path)
       },
-      rename: (newpath) => path = newpath,
+      rename: newpath => path = newpath,
       close: () => {
         fs.unlinkSync(`${path}.lock`)
         fs.closeSync(fd)
       }
     }
     return {
-      get: (key) => memmap.get(key),
+      get: key => memmap.get(key),
       set: (key, value) => {
         fsmap.set(key, value)
         memmap.set(key, value)
       },
-      clear: (key) => {
-        fsmap.clear(key)
-        memmap.clear(key)
+      delete: key => {
+        fsmap.delete(key)
+        memmap.delete(key)
       },
-      length: () => memmap.length(),
-      all: () => memmap.all(),
+      length: () => memmap.size,
+      entries: () => memmap.entries(),
       compact: () => fsmap.compact(),
-      rename: (newpath) => fsmap.rename(newpath),
+      rename: newpath => fsmap.rename(newpath),
       close: () => {
         if (_isclosed) return
         _isclosed = true
@@ -116,16 +115,16 @@ const shulz = {
     const map = shulz.create(`${path}.new`, buffersize)
     if (fs.existsSync(path)) {
       const object = shulz.read(path)
-      for (key in object)
-        map.set(key, object[key])
+      for (const [key, value] of Object.entries(object))
+        map.set(key, value)
     }
     fs.renameSync(`${path}.new`, path)
     fs.unlinkSync(`${path}.new.lock`)
     map.rename(path)
     return map
   },
-  print: require('./print'),
-  read: require('./read')
+  print,
+  read
 }
 
-module.exports = shulz
+export default shulz
