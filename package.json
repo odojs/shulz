@@ -1,6 +1,6 @@
 {
   "name": "shulz",
-  "version": "1.1.1",
+  "version": "2.0.0",
   "description": "Resilient, persistent in process hashmaps for Node.js",
   "type": "module",
   "main": "index.js",
